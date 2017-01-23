@@ -59,7 +59,7 @@ void plotPoint (int x, int y) {
 
 }
 
-// Plots a line between two points using DDA line algorithm
+// Plots a line between two points using Bresenham's line drawing algorithm
 void plotLine (line_t l) {
 
 	// Get a random color
@@ -69,29 +69,49 @@ void plotLine (line_t l) {
 	int dx = l.x2 - l.x1;
 	int dy = l.y2 - l.y1;
 
-	float m = (dy + 0.0) / (dx + 0.0);
+	int d;
+
+	if (l.y2 > l.y1) {
+		if (dy > dx) {
+			d = 2 * dy - dx;
+		} else {
+			d = 2 * dx - dy;
+		}
+	} else {
+		if (dy > dx) {
+			d = - 2 * dy - dx;
+		} else {
+			d = 2 * dx - dy;
+		}
+	}
 
 	int x = l.x1;
 	int y = l.y1;
 
-	int steps = 1;
-	int length;
-
-	if (fabs(m) < 1)
-		length = abs(dy);
-	else
-		length = abs(dx);
-
-	int xinc = dx / length;
-	int yinc = dy / length;
-
-	plotPoint(x, y);
-
-	while (steps <= length) {
-		x += xinc;
-		y += yinc;
+	for (; x <= l.x2; ++x) {
 		plotPoint(x, y);
-		steps += 1;
+		if (l.y2 > l.y1) {
+			if (dy > dx) {
+				if (d > 0) {
+					y += 1;
+					d -= dx;
+				}
+				d += 2 * dy;
+			} else {
+				if (d > 0) {
+					x += 1;
+					d -= dx;
+				}
+				d += 2 * dy;
+			}
+		} else {
+			if (dy > dx) {
+				d = - 2 * dy - dx;
+			} else {
+				d = 2 * dx - dy;
+			}
+		}
+
 	}
 
 }

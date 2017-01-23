@@ -8,7 +8,7 @@ Need to have GL, GLU and GLUT libraries installed.
 
 - OS X, Linux and Windows
 	- cd to the directory;
-	- Open `Makefile`, comment and uncomment lines pretaining to your OS.
+	- Open `Makefile`, comment and uncomment lines pertaining to your OS.
 	- `make`
 	- `./main` or `main.exe`
 
