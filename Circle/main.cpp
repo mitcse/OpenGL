@@ -22,6 +22,8 @@
 	#include <GL/glut.h>
 #endif
 
+#define VERTEX(X, Y) glVertex3f((X)/800.0, (Y)/800.0, 0);
+
 using namespace std;
 
 typedef struct color {
@@ -57,19 +59,22 @@ circle_t getCircle (int x, int y, int r) {
 circle_t circles[100];
 int ci;
 
+/**
+*	Plots circle points in the first octant, and their reflections in the corresponding octants.
+*/
 void plotCirclePoints (int x, int y, int dx, int dy) {
 	
 	glBegin(GL_POINTS);
 
-		glVertex3f(x/800.0, y/800.0, 0);
-		glVertex3f(x/800.0, -y/800.0, 0);
-		glVertex3f(-x/800.0, y/800.0, 0);
-		glVertex3f(-x/800.0, -y/800.0, 0);
+		VERTEX(x + dx, y + dy);
+		VERTEX(-x + dx, y + dy);
+		VERTEX(x + dx, -y + dy);
+		VERTEX(-x + dx, -y + dy);
 
-		glVertex3f(y/800.0, x/800.0, 0);
-		glVertex3f(y/800.0, -x/800.0, 0);
-		glVertex3f(-y/800.0, x/800.0, 0);
-		glVertex3f(-y/800.0, -x/800.0, 0);
+		VERTEX(y + dx, x + dy);
+		VERTEX(-y + dx, x + dy);
+		VERTEX(y + dx, -x + dy);
+		VERTEX(-y + dx, -x + dy);
 
 	glEnd();
 
@@ -88,18 +93,18 @@ void plotCircle (circle_t c) {
 
 	plotCirclePoints(x, y, c.x, c.y);
 
-	int d = 1 - c.r;
+	int d = 1 - c.r; // Initially, d = 1 - R
 
 	while (y > x) {
 
 		if (d <= 0) {
 			
-			d += 2 * x + 3;
+			d += 2 * x + 3; // If point is inside, d += 2x + 3
 			x += 1;
 
 		} else {
 
-			d += 2 * x - 2 * y + 5;
+			d += 2 * x - 2 * y + 5; // If point is outside, d += 2x - 2y + 5
 			x += 1;
 			y -= 1; 
 
@@ -149,14 +154,12 @@ int main (int argc, char *argv []) {
 
 	// Draw random circles
 	do {
-		x = rand() % 800 - 400;	
-		y = rand() % 800 - 400;
-		r = rand() % 800 - 400;
+		x = rand() % 400 - 200;	
+		y = rand() % 400 - 200;
+		r = abs(rand() % 1200 - 600); // Radius has to be positive
 		circle_t c = getCircle (x, y, r);
 		circles[ci++] = c;
-		// printf("Continue (0/1): ");
-		// scanf("%d", &ch);
-	} while (ci < 20);
+	} while (ci < 16);
 
 	// Main loop
 	glutMainLoop();
