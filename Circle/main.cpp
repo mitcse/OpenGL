@@ -1,9 +1,9 @@
 //
 // main.cpp
 //
-// DDA line drawing algorithm
+// Mid point circle drawing algorithm
 //
-// Created by @avikantz on 01/17/17
+// Created by @avikantz on 01/28/17
 //
 
 #include <stdlib.h>
@@ -40,66 +40,73 @@ color_t randomColor () {
 	return color;
 }
 
-typedef struct line {
-	int x1, y1;
-	int x2, y2;
-} line_t;
+typedef struct circle {
+	int x;
+	int y;
+	int r;
+} circle_t;
 
-line_t getLine (int x1, int y1, int x2, int y2) {
-	line_t l;
-	l.x1 = min(x1, x2);
-	l.y1 = y1;
-	l.x2 = max(x1, x2);
-	l.y2 = y2;
-	return l;
+circle_t getCircle (int x, int y, int r) {
+	circle_t c;
+	c.x = x;
+	c.y = y;
+	c.r = r;
+	return c;
 }
 
-line_t lines[128];
-int li;
+circle_t circles[100];
+int ci;
 
-void plotPoint (int x, int y) {
+void plotCirclePoints (int x, int y, int dx, int dy) {
 	
 	glBegin(GL_POINTS);
 
 		glVertex3f(x/800.0, y/800.0, 0);
+		glVertex3f(x/800.0, -y/800.0, 0);
+		glVertex3f(-x/800.0, y/800.0, 0);
+		glVertex3f(-x/800.0, -y/800.0, 0);
+
+		glVertex3f(y/800.0, x/800.0, 0);
+		glVertex3f(y/800.0, -x/800.0, 0);
+		glVertex3f(-y/800.0, x/800.0, 0);
+		glVertex3f(-y/800.0, -x/800.0, 0);
 
 	glEnd();
 
 }
 
-// Plots a line between two points using DDA line algorithm
-void plotLine (line_t l) {
+// Plots a circle with radius c.r at center c.x, c.y
+void plotCircle (circle_t c) {
 
 	// Get a random color
 	color_t color = randomColor();
 	glColor3f(color.r, color.g, color.b); 
 
-	int dx = l.x2 - l.x1;
-	int dy = l.y2 - l.y1;
+	// Move to the top point of the circle.
+	int x = 0;
+	int y = c.r;
 
-	float m = (dy + 0.0) / (dx + 0.0);
+	plotCirclePoints(x, y, c.x, c.y);
 
-	int x = l.x1;
-	int y = l.y1;
+	int d = 1 - c.r;
 
-	int steps = 1;
-	int length;
+	while (y > x) {
 
-	if (fabs(m) < 1)
-		length = abs(dy);
-	else
-		length = abs(dx);
+		if (d <= 0) {
+			
+			d += 2 * x + 3;
+			x += 1;
 
-	int xinc = dx / length;
-	int yinc = dy / length;
+		} else {
 
-	plotPoint(x, y);
+			d += 2 * x - 2 * y + 5;
+			x += 1;
+			y -= 1; 
 
-	while (steps <= length) {
-		x += xinc;
-		y += yinc;
-		plotPoint(x, y);
-		steps += 1;
+		}
+
+		plotCirclePoints(x, y, c.x, c.y);
+
 	}
 
 }
@@ -109,10 +116,11 @@ void display () {
 	// Set every pixel in the frame buffer to the current clear color.
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	glLineWidth(2.0);
+
 	int i;
-	for (i = 0; i < li; ++i) {
-		line_t line = lines[i];
-		plotLine(line);
+	for (i = 0; i < ci; ++i) {
+		plotCircle(circles[i]);
 	}
 
 	// Flush drawing command buffer to make drawing happen as soon as possible.
@@ -131,34 +139,24 @@ int main (int argc, char *argv []) {
 	// Position window and give it a title.
 	glutInitWindowPosition(80, 80);
 	glutInitWindowSize(800, 800);
-	glutCreateWindow("Open GL Demo");
+	glutCreateWindow("Circles");
 
 	// Call the display function
 	glutDisplayFunc(display);
 
-	int x1, y1, x2, y2;
-	int ch;
-	li = 0;
-	// do {
-	// 	printf("Enter coordinates: (x1, y1, x2, y2): ");
-	// 	scanf("%d %d %d %d", &x1, &y1, &x2, &y2);
-	// 	line_t line = getLine(x1, y1, x2, y2);
-	// 	lines[li++] = line;
-	// 	printf("Continue (0/1): ");
-	// 	scanf("%d", &ch);
-	// } while (ch == 1 && li < 128);
+	int x, y, r;
+	ci = 0;
 
-	// Draw random lines...
+	// Draw random circles
 	do {
-		x1 = rand() % 1600 - 800;
-		x2 = rand() % 1600 - 800;
-		y1 = rand() % 1600 - 800;
-		y2 = rand() % 1600 - 800;
-		line_t line = getLine(x1, y1, x2, y2);
-		lines[li++] = line;
+		x = rand() % 800 - 400;	
+		y = rand() % 800 - 400;
+		r = rand() % 800 - 400;
+		circle_t c = getCircle (x, y, r);
+		circles[ci++] = c;
 		// printf("Continue (0/1): ");
 		// scanf("%d", &ch);
-	} while (li < 40);
+	} while (ci < 20);
 
 	// Main loop
 	glutMainLoop();

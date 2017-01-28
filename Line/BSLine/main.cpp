@@ -1,3 +1,11 @@
+//
+// main.cpp
+//
+// Bresennan line drawing algorithm
+//
+// Created by @avikantz on 01/23/17
+//
+
 #include <stdlib.h>
 #include <iostream>
 #include <fstream>
