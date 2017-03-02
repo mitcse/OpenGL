@@ -199,17 +199,6 @@ int main (int argc, char *argv []) {
 		}
 	}
 
-	/*
-	// Draw random circles
-	do {
-		x = rand() % 400 - 200;	
-		y = rand() % 400 - 200;
-		r = abs(rand() % 1200 - 600); // Radius has to be positive
-		circle_t c = getCircle (x, y, r);
-		circles[ci++] = c;
-	} while (ci < 16);
-	*/
-
 	// Main loop
 	glutMainLoop();
 	
